@@ -1,4 +1,4 @@
-import { ShopeeItem, TiktokItem } from './types';
+import { ShopeeItem, TiktokItem, ExecutiveSummary, DailyMetric, DateRange } from './types';
 
 // --- UTILITY FUNCTIONS ---
 export const parseShopeeValue = (val: string | undefined): number => {
@@ -30,6 +30,76 @@ export const formatDate = (isoString: string): string => {
   if (!isoString) return '';
   return new Date(isoString).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' });
 };
+
+// --- EXECUTIVE DASHBOARD UTILS ---
+
+// Simulate historical data based on current snapshot for demo purposes
+export const generateExecutiveTrend = (range: DateRange, totalRevenue: number, tiktokData: TiktokItem[]): DailyMetric[] => {
+  const days = range === '7d' ? 7 : range === '30d' ? 30 : 90; // approx for YTD demo
+  const data: DailyMetric[] = [];
+  const now = new Date();
+  
+  // Create a map of real tiktok dates to plays
+  const tiktokMap: Record<string, number> = {};
+  tiktokData.forEach(item => {
+    const d = new Date(item.date).toLocaleDateString('en-CA'); // YYYY-MM-DD
+    tiktokMap[d] = (tiktokMap[d] || 0) + item.plays;
+  });
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(now.getDate() - i);
+    const dateStr = d.toLocaleDateString('en-CA');
+    
+    // Simulate revenue fluctuations
+    const baseRev = totalRevenue / days;
+    const randomFactor = 0.7 + Math.random() * 0.6; // 0.7x to 1.3x variation
+    
+    // Inject events
+    let event = undefined;
+    let spike = 1;
+    if (i === 5) { event = "Payday Sale"; spike = 1.8; }
+    if (i === 12) { event = "Viral UGC"; spike = 1.4; }
+    if (i === 25) { event = "Flash Sale"; spike = 1.5; }
+
+    // Use real tiktok data if date matches, else smooth random
+    const realTiktok = tiktokMap[dateStr];
+    const mockTiktok = Math.floor(Math.random() * 50000) + 10000;
+
+    data.push({
+      date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      revenue: Math.floor(baseRev * randomFactor * spike),
+      ugcReach: realTiktok || (mockTiktok * spike),
+      event
+    });
+  }
+  return data;
+};
+
+export const generateExecutiveSummary = (shopeeData: ShopeeItem[], range: DateRange): ExecutiveSummary => {
+  const currentRevenue = shopeeData.reduce((acc, item) => acc + (item.price * item.sold), 0);
+  const currentOrders = shopeeData.reduce((acc, item) => acc + item.sold, 0);
+  const currentAOV = currentOrders > 0 ? currentRevenue / currentOrders : 0;
+
+  // Mock previous period data with realistic variance
+  const variance = 0.85 + Math.random() * 0.3; // -15% to +15%
+  
+  return {
+    revenue: { current: currentRevenue, previous: currentRevenue * variance, delta: (1 - variance) * 100 },
+    orders: { current: currentOrders, previous: currentOrders * (variance + 0.05), delta: (1 - (variance + 0.05)) * 100 },
+    aov: { current: currentAOV, previous: currentAOV * 0.95, delta: 5.2 }
+  };
+};
+
+export const getRiskAndOpportunities = (tiktokData: TiktokItem[]) => {
+  const topTag = tiktokData[0]?.tags[0] || "#tweely";
+  return {
+    risk: `Inventory Alert: Stock levels for top SKU 'Mini Backpack' are critically low relative to daily run-rate.`,
+    opportunity: `UGC Surge: Engagement on ${topTag} is up +12%, correlated with a 15% revenue lift.`,
+    action: `Recommended: Amplify Creator @tweely_fan's recent video to sustain momentum.`
+  };
+};
+
 
 // --- MOCK DATA GENERATORS ---
 export const generateShopeeData = (): ShopeeItem[] => [

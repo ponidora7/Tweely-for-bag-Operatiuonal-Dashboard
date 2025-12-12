@@ -33,3 +33,18 @@ export interface TrendDataPoint {
   plays: number;
   engagement: number;
 }
+
+export type DateRange = '7d' | '30d' | 'ytd';
+
+export interface ExecutiveSummary {
+  revenue: { current: number; previous: number; delta: number };
+  orders: { current: number; previous: number; delta: number };
+  aov: { current: number; previous: number; delta: number };
+}
+
+export interface DailyMetric {
+  date: string;
+  revenue: number;
+  ugcReach: number;
+  event?: string; // e.g., "Mega Sale", "Viral Post"
+}
