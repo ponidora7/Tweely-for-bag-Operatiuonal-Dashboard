@@ -96,7 +96,7 @@ export default function ExecutiveDashboard({ shopeeData, tiktokData, onShopeeUpl
         </div>
         
         <div className="flex items-center gap-3">
-          <label className="cursor-pointer flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+          <label className="cursor-pointer flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 w-40 h-10 rounded-lg text-sm font-medium transition-colors shadow-sm">
              <Upload className="w-4 h-4" />
              <span>Update Sales</span>
              <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
@@ -104,7 +104,7 @@ export default function ExecutiveDashboard({ shopeeData, tiktokData, onShopeeUpl
           
           <button 
             onClick={handleExport}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white w-40 h-10 rounded-lg text-sm font-medium transition-colors shadow-sm"
           >
             <Download className="w-4 h-4" />
             Export Report
